@@ -49,7 +49,10 @@ INSTALLED_APPS = [
     'ballot',
     'organizers',
     'polls',
-    'voters'
+    'voters',
+
+    # 3rd party apps
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
