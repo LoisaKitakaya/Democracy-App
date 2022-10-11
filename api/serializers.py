@@ -2,7 +2,7 @@ from rest_framework import serializers
 from users.models import User
 from organizers.models import Organizer, Workspace
 from voters.models import Voter
-from polls.models import Poll
+from polls.models import Poll, Candidate
 from ballot.models import Ballot
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,6 +40,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class OrganizerSerializer(serializers.ModelSerializer):
 
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
 
         model  = Organizer
@@ -64,4 +66,63 @@ class WorkspaceSerializer(serializers.ModelSerializer):
             'organizer',
             'voter_limit',
             'poll_limit'
+        ]
+
+class VoterSerializer(serializers.ModelSerializer):
+
+    user = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+
+        model = Voter
+
+        fields = [
+            'user',
+            'country',
+            'workspace'
+        ]
+
+class PollSerializer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = Poll
+
+        fields = [
+            'seat',
+            'intro',
+            'open',
+            'begin_date',
+            'end_date',
+            'organizer',
+            'workspace'
+        ]
+
+class CandidateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = Candidate
+
+        fields = [
+            'organizer',
+            'poll',
+            'first_name',
+            'last_name',
+            'email',
+            'image',
+            'country',
+            'bio'
+        ]
+
+class BallotSerializer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = Ballot
+
+        fields = [
+            'voter',
+            'poll',
+            'candidate',
         ]
