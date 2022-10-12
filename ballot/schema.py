@@ -24,6 +24,12 @@ class Query(graphene.ObjectType):
 
     def resolve_all_ballots(root, info):
 
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
         return Ballot.objects.all()
 
 # GraphQL Mutations

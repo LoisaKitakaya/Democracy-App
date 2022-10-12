@@ -36,9 +36,21 @@ class Query(graphene.ObjectType):
 
     def resolve_all_polls(root, info):
 
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
         return Poll.objects.all()
 
     def resolve_all_candidates(root, info):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
 
         return Workspace.objects.all()
 
