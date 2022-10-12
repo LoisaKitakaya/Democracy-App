@@ -35,9 +35,21 @@ class Query(graphene.ObjectType):
 
     def resolve_all_organizers(root, info):
 
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
         return Organizer.objects.all()
 
     def resolve_all_workspaces(root, info):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
 
         return Workspace.objects.all()
 
