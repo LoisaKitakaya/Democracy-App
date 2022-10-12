@@ -43,16 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # 3rd party apps
+    "graphene_django",
+
     # my apps
     'users',
-    'api',
     'ballot',
     'organizers',
     'polls',
     'voters',
-
-    # 3rd party apps
-    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +148,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # media files (images)
 
 MEDIA_URL = '/public/'
+
+
+# Graphene settings
+
+GRAPHENE = {
+    "SCHEMA": "app.schema.schema"
+}
