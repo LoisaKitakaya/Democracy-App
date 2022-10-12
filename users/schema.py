@@ -10,30 +10,69 @@ class UserType(DjangoObjectType):
 
         model = User
 
-        exclude = ('password',)
+        fields = '__all__'
 
 # GraphQL Queries
 
 class Query(graphene.ObjectType):
     
-    # queries
+    pass
 
-    all_users = graphene.List(UserType)
+# User model mutations
 
-    # resolving queries
+class UserMutation(graphene.Mutation):
 
-    def resolve_all_users(root, info):
+    class Arguments:
 
-        user = info.context.user
+        username = graphene.String(required=True)
+        email = graphene.String(required=True)
+        firstname = graphene.String(required=True)
+        lastname = graphene.String(required=True)
+        password1 = graphene.String(required=True)
+        password2 = graphene.String(required=True)
 
-        if not user.is_authenticated:
-            
-            raise Exception("Authentication credentials were not provided")
+    user = graphene.Field(UserType)
 
-        return User.objects.all()
+    @classmethod
+    def mutate(
+        cls, root, info, 
+        username, 
+        email, 
+        firstname, 
+        lastname, 
+        password1, 
+        password2
+        ):
+
+        if not User.objects.filter(email=email).exists():
+
+            if password1 == password2:
+
+                user = User.objects.create(
+                    username=username, 
+                    email=email, 
+                    first_name=firstname, 
+                    last_name=lastname
+                    )
+
+            else:
+
+                raise Exception("Passwords provided did not match!")
+
+            new_user = User.objects.get(email=email)
+
+            new_user.set_password(password1)
+
+            new_user.save()
+
+        else:
+
+            raise Exception("A user with the same email already exists. Make sure your email is unique!")
+
+        return UserMutation(user=user)
 
 # GraphQL Mutations
 
 class Mutation(graphene.ObjectType):
     
-    pass
+    register_user = UserMutation.Field()
