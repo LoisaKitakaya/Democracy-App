@@ -151,6 +151,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/public/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Graphene settings
 
@@ -173,4 +174,5 @@ GRAPHQL_JWT = {
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     "JWT_EXPIRATION_DELTA": timedelta(days=1),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=3),
+    "JWT_AUTH_HEADER_PREFIX": "Bearer",
 }

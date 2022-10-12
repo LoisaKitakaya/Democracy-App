@@ -1,6 +1,20 @@
 import graphene
+from django.http import HttpRequest as request
+from graphene_file_upload.scalars import Upload
 from graphene_django import DjangoObjectType
 from organizers.models import Organizer, Workspace
+from organizers.forms import UploadOrganizerForm
+from users.models import User
+
+# my object type
+
+class UserType(DjangoObjectType):
+
+    class Meta:
+
+        model = User
+
+        fields = '__all__'
 
 # my object type
 
@@ -53,8 +67,48 @@ class Query(graphene.ObjectType):
 
         return Workspace.objects.all()
 
+# User model mutations
+
+class CreateOrganizer(graphene.Mutation):
+
+    class Arguments:
+
+        user_id = graphene.Int(required=True)
+        phone = graphene.String(required=True)
+        country = graphene.String(required=True)
+        # image = Upload(required=False)
+
+    organizer = graphene.Field(OrganizerType)
+
+    @classmethod
+    def mutate(
+        cls, root, info,
+        user_id,
+        phone,
+        country,
+        # image
+    ):
+
+        user = User.objects.get(id=user_id)
+
+        organizer = Organizer.objects.create(
+            user=user,
+            phone=phone,
+            country=country
+        )
+
+        if request.method == 'POST':
+
+            form = UploadOrganizerForm(request.FILES, instance=organizer)
+
+            if form.is_valid():
+
+                form.save
+
+        return CreateOrganizer(organizer=organizer)
+
 # GraphQL Mutations
 
 class Mutation(graphene.ObjectType):
     
-    pass
+    register_organizer = CreateOrganizer.Field()

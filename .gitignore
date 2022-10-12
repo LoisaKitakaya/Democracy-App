@@ -132,3 +132,9 @@ dmypy.json
 
 # vscode
 .vscode
+
+# dump
+dump.json
+
+# schema
+schema.js
