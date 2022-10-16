@@ -1,19 +1,7 @@
 import graphene
-from django.http import HttpRequest as request
 from graphene_django import DjangoObjectType
 from organizers.models import Organizer, Workspace
-from organizers.forms import UploadOrganizerForm
-from users.models import User
-
-# my object type
-
-class UserType(DjangoObjectType):
-
-    class Meta:
-
-        model = User
-
-        fields = '__all__'
+from voters.models import Voter
 
 # my object type
 
@@ -74,6 +62,7 @@ class CreateOrganizer(graphene.Mutation):
 
         phone = graphene.String(required=True)
         country = graphene.String(required=True)
+        workspace = graphene.String(required=True)
 
     organizer = graphene.Field(OrganizerType)
 
@@ -81,15 +70,37 @@ class CreateOrganizer(graphene.Mutation):
     def mutate(
         cls, root, info,
         phone,
-        country
+        country,
+        workspace
     ):
 
         user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        is_voter = Voter.objects.get(user=user)
+
+        if is_voter:
+
+            raise Exception("You cannot register as an organizer. You already have a voters account")
+
+        find_workspace = Workspace.objects.get(name=workspace)
+
+        if find_workspace:
+
+            raise Exception("A workspace with the same name already exists")
 
         organizer = Organizer.objects.create(
             user=user,
             phone=phone,
             country=country
+        )
+
+        Workspace.objects.create(
+            organizer=organizer,
+            name=workspace
         )
 
         return CreateOrganizer(organizer=organizer)

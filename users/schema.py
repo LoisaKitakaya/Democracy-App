@@ -28,7 +28,7 @@ class UserMutation(graphene.Mutation):
         email = graphene.String(required=True)
         firstname = graphene.String(required=True)
         lastname = graphene.String(required=True)
-        password1 = graphene.String(required=True)
+        password = graphene.String(required=True)
         password2 = graphene.String(required=True)
 
     user = graphene.Field(UserType)
@@ -40,13 +40,13 @@ class UserMutation(graphene.Mutation):
         email, 
         firstname, 
         lastname, 
-        password1, 
+        password, 
         password2
         ):
 
         if not User.objects.filter(email=email).exists():
 
-            if password1 == password2:
+            if password == password2:
 
                 user = User.objects.create(
                     username=username, 
@@ -61,7 +61,7 @@ class UserMutation(graphene.Mutation):
 
             new_user = User.objects.get(email=email)
 
-            new_user.set_password(password1)
+            new_user.set_password(password)
 
             new_user.save()
 
