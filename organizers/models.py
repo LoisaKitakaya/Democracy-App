@@ -37,7 +37,7 @@ class Organizer(models.Model):
 
 class Workspace(models.Model):
 
-    name = models.CharField(max_length=254, blank=False)
+    name = models.CharField(max_length=254, blank=False, unique=True)
     organizer = models.ForeignKey(Organizer, on_delete=models.CASCADE)
     voter_limit = models.IntegerField(default=10, blank=False)
     poll_limit = models.IntegerField(default=1, blank=False)
