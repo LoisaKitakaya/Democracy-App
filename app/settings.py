@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 3rd party apps
+    'cloudinary_storage',
+    'cloudinary',
     "graphene_django",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     'corsheaders',
@@ -158,6 +160,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/public/'
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 # Graphene settings
 
 GRAPHENE = {
@@ -195,3 +199,11 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOW_METHODS = list(default_methods)
 
 CORS_ALLOW_HEADERS = list(default_headers)
+
+# Cloudinary settings
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env("CLOUD_NAME"),
+    'API_KEY': env("API_KEY"),
+    'API_SECRET': env("API_SECRET")
+}

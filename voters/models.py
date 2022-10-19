@@ -6,7 +6,7 @@ from organizers.models import Workspace
 class Voter(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    country = models.CharField(max_length=254, blank=False)
+    country = models.CharField(max_length=254, blank=False, null=True)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
