@@ -84,7 +84,7 @@ class Query(graphene.ObjectType):
 
         return Workspace.objects.all()
 
-# User model mutations
+# Organizer model mutations
 
 class CreateOrganizer(graphene.Mutation):
 
