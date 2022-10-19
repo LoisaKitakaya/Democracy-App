@@ -1,6 +1,6 @@
 import graphene
 from graphene_django import DjangoObjectType
-from organizers.models import Workspace
+from organizers.models import Workspace, Organizer
 from polls.models import Poll, Candidate
 
 # my object type
@@ -42,7 +42,9 @@ class Query(graphene.ObjectType):
             
             raise Exception("Authentication credentials were not provided")
 
-        return Poll.objects.all()
+        organizer = Organizer.objects.get(user=user)
+
+        return Poll.objects.filter(organizer=organizer)
 
     def resolve_all_candidates(root, info):
 
