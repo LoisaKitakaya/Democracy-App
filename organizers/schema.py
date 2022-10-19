@@ -2,6 +2,8 @@ import graphene
 from graphene_django import DjangoObjectType
 from organizers.models import Organizer, Workspace
 from voters.models import Voter
+from django.contrib.auth.models import Permission
+from graphql_jwt.decorators import permission_required
 
 # my object type
 
@@ -29,12 +31,13 @@ class Query(graphene.ObjectType):
     
     # queries
 
-    all_organizers = graphene.List(OrganizerType)
+    my_organizer_account = graphene.Field(OrganizerType)
     all_workspaces = graphene.List(WorkspaceType)
 
     # resolving queries
 
-    def resolve_all_organizers(root, info):
+    @permission_required("polls.add_poll")
+    def resolve_my_organizer_account(root, info):
 
         user = info.context.user
 
@@ -42,7 +45,7 @@ class Query(graphene.ObjectType):
             
             raise Exception("Authentication credentials were not provided")
 
-        return Organizer.objects.all()
+        return Organizer.objects.get(user=user)
 
     def resolve_all_workspaces(root, info):
 
@@ -80,17 +83,37 @@ class CreateOrganizer(graphene.Mutation):
             
             raise Exception("Authentication credentials were not provided")
 
-        is_voter = Voter.objects.get(user=user)
+        try:
 
-        if is_voter:
+            Voter.objects.get(user=user)
 
-            raise Exception("You cannot register as an organizer. You already have a voters account")
+        except:
 
-        find_workspace = Workspace.objects.get(name=workspace)
+            "User is not associated with voter account"
 
-        if find_workspace:
+        else:
 
-            raise Exception("A workspace with the same name already exists")
+            is_voter = Voter.objects.get(user=user)
+
+            if is_voter:
+
+                raise Exception("You cannot register as an organizer. You already have a voters account")
+
+        try:
+
+            find_workspace = Workspace.objects.get(name=workspace)
+
+        except:
+
+            print("Workspace with provided name does not exist")
+
+        else:
+
+            find_workspace = Workspace.objects.get(name=workspace)
+
+            if find_workspace:
+
+                raise Exception("A workspace with the same name already exists")
 
         organizer = Organizer.objects.create(
             user=user,
@@ -102,6 +125,18 @@ class CreateOrganizer(graphene.Mutation):
             organizer=organizer,
             name=workspace
         )
+
+        try:
+
+            organizer_permissions = Permission.objects.get(name="Can add poll")
+
+        except Permission.DoesNotExist:
+
+            print("Permission does not exist")
+
+        else:
+
+            user.user_permissions.add(organizer_permissions)
 
         return CreateOrganizer(organizer=organizer)
 
