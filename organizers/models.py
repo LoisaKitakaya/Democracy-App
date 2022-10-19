@@ -17,7 +17,7 @@ class Organizer(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='images/', blank=True)
+    image = models.ImageField(upload_to='organizers/', blank=True, null=True)
     phone = models.CharField(max_length=254, blank=False)
     country = models.CharField(max_length=254, blank=False)
     paid_status = models.BooleanField(default=False, verbose_name="has purchased a package")

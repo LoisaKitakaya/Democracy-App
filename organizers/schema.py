@@ -31,10 +31,37 @@ class Query(graphene.ObjectType):
     
     # queries
 
+    organizer_avatar = graphene.String()
     my_organizer_account = graphene.Field(OrganizerType)
     all_workspaces = graphene.List(WorkspaceType)
 
     # resolving queries
+
+    def resolve_organizer_avatar(self, info):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        organizer = Organizer.objects.get(user=user)
+
+        try:
+
+            organizer.image.url
+
+        except:
+
+            print("User has not uploaded an image")
+
+            return "https://via.placeholder.com/300"
+
+        else:
+
+            organizer_avatar = organizer.image.url
+
+            return organizer_avatar
 
     @permission_required("polls.add_poll")
     def resolve_my_organizer_account(root, info):
@@ -89,7 +116,7 @@ class CreateOrganizer(graphene.Mutation):
 
         except:
 
-            "User is not associated with voter account"
+            print("User is not associated with voter account")
 
         else:
 
