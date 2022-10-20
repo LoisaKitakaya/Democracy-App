@@ -132,14 +132,77 @@ class EditPoll(graphene.Mutation):
 
         poll = Poll.objects.get(id=id)
 
-        poll.seat = seat,
+        poll.seat = seat
         poll.intro = intro
         poll.begin_date=begin_date
         poll.end_date = end_date
         
         poll.save()
 
-        return CreatePoll(poll=poll)
+        return EditPoll(poll=poll)
+
+class RegisterCandidate(graphene.Mutation):
+
+    class Arguments:
+
+        id = graphene.Int(required=True)
+        first_name = graphene.String(required=True)
+        last_name = graphene.String(required=True)
+        email = graphene.String(required=True)
+        country = graphene.String(required=True)
+        bio = graphene.String(required=True)
+
+    candidate = graphene.Field(CandidateType)
+
+    @classmethod
+    @permission_required("polls.add_poll")
+    def mutate(
+        cls, root, info,
+        id,
+        first_name,
+        last_name,
+        email,
+        country,
+        bio
+    ):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        try:
+
+            poll = Poll.objects.get(id=id)
+
+        except:
+
+            print("Selected poll does not exist")
+
+            raise Exception("Selected poll does not exist")
+
+        try:
+
+            organizer = Organizer.objects.get(user=user)
+
+        except:
+
+            print("This account does not exist")
+
+            raise Exception("This account does not exist")
+
+        candidate = Candidate.objects.create(
+            organizer=organizer,
+            poll=poll,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            country=country,
+            bio=bio
+        )
+
+        return RegisterCandidate(candidate=candidate)
 
 # GraphQL Mutations
 
@@ -147,3 +210,4 @@ class Mutation(graphene.ObjectType):
     
     create_poll = CreatePoll.Field()
     update_poll = EditPoll.Field()
+    register_candidate = RegisterCandidate.Field()
