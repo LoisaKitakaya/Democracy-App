@@ -204,10 +204,74 @@ class RegisterCandidate(graphene.Mutation):
 
         return RegisterCandidate(candidate=candidate)
 
+class ClosePoll(graphene.Mutation):
+
+    class Arguments:
+
+        id = graphene.String(required=True)
+
+    confirmation = graphene.String()
+
+    @classmethod
+    @permission_required("polls.add_poll")
+    def mutate(
+        cls, root, info,
+        id
+    ):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        poll = Poll.objects.get(id=int(id))
+
+        poll.open = False
+
+        poll.save()
+
+        confirmation = "This poll has been closed"
+
+        return ClosePoll(confirmation=confirmation)
+
+class DeletePoll(graphene.Mutation):
+
+    class Arguments:
+
+        id = graphene.String(required=True)
+
+    confirmation = graphene.String()
+
+    @classmethod
+    @permission_required("polls.add_poll")
+    def mutate(
+        cls, root, info,
+        id
+    ):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        poll = Poll.objects.get(id=int(id))
+
+        poll.open = False
+
+        poll.delete()
+
+        confirmation = "This poll has been deleted"
+
+        return DeletePoll(confirmation=confirmation)
+
 # GraphQL Mutations
 
 class Mutation(graphene.ObjectType):
     
     create_poll = CreatePoll.Field()
     update_poll = EditPoll.Field()
+    close_poll = ClosePoll.Field()
+    delete_poll = DeletePoll.Field()
     register_candidate = RegisterCandidate.Field()
