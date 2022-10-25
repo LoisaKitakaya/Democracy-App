@@ -56,7 +56,9 @@ class Query(graphene.ObjectType):
             
             raise Exception("Authentication credentials were not provided")
 
-        return Workspace.objects.all()
+        organizer = Organizer.objects.get(user=user)
+
+        return Candidate.objects.filter(organizer=organizer)
 
     def resolve_candidate_avatar(root, info, id):
 

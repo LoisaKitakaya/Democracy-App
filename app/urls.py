@@ -24,3 +24,6 @@ urlpatterns = [
     # graphql api path
     path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
 ]
+
+admin.site.site_header = 'Pollar Admin Panel'
+admin.site.site_title = 'Pollar Admin'
