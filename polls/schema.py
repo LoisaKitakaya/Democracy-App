@@ -105,7 +105,7 @@ class EditPoll(graphene.Mutation):
 
     class Arguments:
 
-        id = graphene.Int(required=True)
+        id = graphene.String(required=True)
         seat = graphene.String(required=True)
         intro = graphene.String(required=True)
         begin_date = graphene.Date(required=True)
@@ -130,7 +130,7 @@ class EditPoll(graphene.Mutation):
             
             raise Exception("Authentication credentials were not provided")
 
-        poll = Poll.objects.get(id=id)
+        poll = Poll.objects.get(id=int(id))
 
         poll.seat = seat
         poll.intro = intro
@@ -145,7 +145,7 @@ class RegisterCandidate(graphene.Mutation):
 
     class Arguments:
 
-        id = graphene.Int(required=True)
+        id = graphene.String(required=True)
         first_name = graphene.String(required=True)
         last_name = graphene.String(required=True)
         email = graphene.String(required=True)
@@ -174,7 +174,7 @@ class RegisterCandidate(graphene.Mutation):
 
         try:
 
-            poll = Poll.objects.get(id=id)
+            poll = Poll.objects.get(id=int(id))
 
         except:
 
