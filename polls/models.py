@@ -31,7 +31,7 @@ class Candidate(models.Model):
     first_name = models.CharField(max_length=254, blank=False)
     last_name = models.CharField(max_length=254, blank=False)
     email = models.EmailField(max_length=254, blank=False)
-    image = models.ImageField(upload_to='images/', blank=True)
+    image = models.ImageField(upload_to='candidates/', blank=True)
     country = models.CharField(max_length=254, blank=False)
     bio = models.TextField(blank=False)
     created_date = models.DateTimeField(auto_now_add=True)

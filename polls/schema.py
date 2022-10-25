@@ -32,6 +32,7 @@ class Query(graphene.ObjectType):
 
     organizer_polls = graphene.List(PollType)
     organizer_candidates = graphene.List(CandidateType)
+    candidate_avatar = graphene.String(id=graphene.String())
 
     # resolving queries
 
@@ -56,6 +57,32 @@ class Query(graphene.ObjectType):
             raise Exception("Authentication credentials were not provided")
 
         return Workspace.objects.all()
+
+    def resolve_candidate_avatar(root, info, id):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        candidate = Candidate.objects.get(id=int(id))
+
+        try:
+
+            candidate.image.url
+
+        except:
+
+            print("Candidate does not have an avatar")
+
+            return "https://via.placeholder.com/720x468"
+
+        else:
+
+            candidate_avatar = candidate.image.url
+
+            return candidate_avatar
 
 # Poll model mutations
 

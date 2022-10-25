@@ -37,7 +37,7 @@ class Query(graphene.ObjectType):
 
     # resolving queries
 
-    def resolve_organizer_avatar(self, info):
+    def resolve_organizer_avatar(root, info):
 
         user = info.context.user
 
