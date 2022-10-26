@@ -23,6 +23,10 @@ urlpatterns = [
 
     # graphql api path
     path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+
+    # drf api path
+    path('organizers/', include('organizers.urls')),
+    path('candidates/', include('polls.urls')),
 ]
 
 admin.site.site_header = 'Pollar Admin Panel'
