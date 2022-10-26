@@ -23,9 +23,6 @@ def update_avatar(request, format=None):
 
     else:
 
-        print(image)
-        print(id)
-
         candidate.image = image
 
         candidate.save()

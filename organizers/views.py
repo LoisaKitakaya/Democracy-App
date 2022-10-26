@@ -9,8 +9,8 @@ from .models import Organizer
 @api_view(['POST'])
 def update_avatar(request):
 
-    id = request.POST["id"]
-    image = request.FILES["image"]
+    id = request.data.get("id")
+    image = request.FILES.get('image')
 
     try:
 
