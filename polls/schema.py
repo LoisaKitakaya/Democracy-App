@@ -56,7 +56,9 @@ class Query(graphene.ObjectType):
             
             raise Exception("Authentication credentials were not provided")
 
-        return Workspace.objects.all()
+        organizer = Organizer.objects.get(user=user)
+
+        return Candidate.objects.filter(organizer=organizer)
 
     def resolve_candidate_avatar(root, info, id):
 
@@ -231,6 +233,86 @@ class RegisterCandidate(graphene.Mutation):
 
         return RegisterCandidate(candidate=candidate)
 
+class EditCandidate(graphene.Mutation):
+
+    class Arguments:
+
+        id = graphene.String(required=True)
+        first_name = graphene.String(required=True)
+        last_name = graphene.String(required=True)
+        email = graphene.String(required=True)
+        country = graphene.String(required=True)
+        bio = graphene.String(required=True)
+
+    candidate = graphene.Field(CandidateType)
+
+    @classmethod
+    @permission_required("polls.add_poll")
+    def mutate(
+        cls, root, info,
+        id,
+        first_name,
+        last_name,
+        email,
+        country,
+        bio
+    ):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        try:
+
+            candidate = Candidate.objects.get(id=int(id))
+
+        except:
+
+            print("candidate account does not exist")
+
+            raise Exception("Candidate account does not exist")
+
+        candidate.first_name = first_name
+        candidate.last_name = last_name
+        candidate.email = email
+        candidate.country = country
+        candidate.bio = bio
+
+        candidate.save()
+
+        return EditCandidate(candidate=candidate)
+
+class DeleteCandidate(graphene.Mutation):
+
+    class Arguments:
+
+        id = graphene.String(required=True)
+
+    confirmation = graphene.String()
+
+    @classmethod
+    @permission_required("polls.add_poll")
+    def mutate(
+        cls, root, info,
+        id
+    ):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        candidate = Candidate.objects.get(id=int(id))
+
+        candidate.delete()
+
+        confirmation = "This poll has been deleted"
+
+        return DeleteCandidate(confirmation=confirmation)
+
 class ClosePoll(graphene.Mutation):
 
     class Arguments:
@@ -285,8 +367,6 @@ class DeletePoll(graphene.Mutation):
 
         poll = Poll.objects.get(id=int(id))
 
-        poll.open = False
-
         poll.delete()
 
         confirmation = "This poll has been deleted"
@@ -302,3 +382,5 @@ class Mutation(graphene.ObjectType):
     close_poll = ClosePoll.Field()
     delete_poll = DeletePoll.Field()
     register_candidate = RegisterCandidate.Field()
+    edit_candidate = EditCandidate.Field()
+    delete_candidate = DeleteCandidate.Field()
