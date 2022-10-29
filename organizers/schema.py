@@ -63,7 +63,7 @@ class Query(graphene.ObjectType):
 
             return organizer_avatar
 
-    @permission_required("polls.add_poll")
+    # @permission_required("polls.add_poll")
     def resolve_my_organizer_account(root, info):
 
         user = info.context.user
