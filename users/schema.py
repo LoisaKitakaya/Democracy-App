@@ -20,7 +20,7 @@ class Query(graphene.ObjectType):
 
 # User model mutations
 
-class UserMutation(graphene.Mutation):
+class UserRegistration(graphene.Mutation):
 
     class Arguments:
 
@@ -69,10 +69,10 @@ class UserMutation(graphene.Mutation):
 
             raise Exception("A user with the same email already exists. Make sure your email is unique!")
 
-        return UserMutation(user=user)
+        return UserRegistration(user=user)
 
 # GraphQL Mutations
 
 class Mutation(graphene.ObjectType):
     
-    register_user = UserMutation.Field()
+    register_user = UserRegistration.Field()

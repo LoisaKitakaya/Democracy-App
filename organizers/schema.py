@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from organizers.models import Organizer, Workspace
 from voters.models import Voter
+from users.models import User
 from django.contrib.auth.models import Permission
 from graphql_jwt.decorators import permission_required
 
@@ -63,7 +64,7 @@ class Query(graphene.ObjectType):
 
             return organizer_avatar
 
-    # @permission_required("polls.add_poll")
+    @permission_required("polls.add_poll")
     def resolve_my_organizer_account(root, info):
 
         user = info.context.user
@@ -167,8 +168,88 @@ class CreateOrganizer(graphene.Mutation):
 
         return CreateOrganizer(organizer=organizer)
 
+class UpdateOrganizer(graphene.Mutation):
+
+    class Arguments:
+
+        username = graphene.String(required=True)
+        first_name = graphene.String(required=True)
+        last_name = graphene.String(required=True)
+        phone = graphene.String(required=True)
+        country = graphene.String(required=True)
+        workspace = graphene.String(required=True)
+
+    organizer = graphene.Field(OrganizerType)
+
+    @classmethod
+    def mutate(
+        cls, root, info,
+        username,
+        first_name,
+        last_name,
+        phone,
+        country,
+        workspace
+    ):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        username_exists = User.objects.get(username=username)
+
+        if username_exists:
+
+            raise Exception("The username provided has already been used")
+
+        else:
+
+            User.objects.filter(id=user.id).update(
+                username=username,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+        try:
+
+            organizer = Organizer.objects.get(user=user)
+
+        except:
+
+            print("Account does not exist")
+
+            raise Exception("This account does not exist")
+
+        else:
+
+            organizer.phone = phone
+            organizer.country = country
+
+            organizer.save()
+
+        try:
+
+            organizer_workspace = Workspace.objects.get(organizer=organizer)
+
+        except:
+
+            print("Workspace does not exist")
+
+            raise Exception("Workspace does not exist")
+
+        else:
+
+            organizer_workspace.name = workspace
+
+            organizer_workspace.save()
+
+        return UpdateOrganizer(organizer=organizer)
+
 # GraphQL Mutations
 
 class Mutation(graphene.ObjectType):
     
     register_organizer = CreateOrganizer.Field()
+    update_organizer = UpdateOrganizer.Field()
