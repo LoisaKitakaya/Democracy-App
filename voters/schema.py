@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from voters.models import Voter
 from organizers.models import Workspace, Organizer
+from users.models import User
 from django.contrib.auth.models import Permission
 from graphql_jwt.decorators import permission_required
 
@@ -123,8 +124,77 @@ class CreateVoter(graphene.Mutation):
 
         return CreateVoter(voter=voter)
 
+class UpdateVoter(graphene.Mutation):
+
+    class Arguments:
+
+        username = graphene.String(required=True)
+        first_name = graphene.String(required=True)
+        last_name = graphene.String(required=True)
+        country = graphene.String(required=True)
+
+    voter = graphene.Field(VoterType)
+
+    @classmethod
+    def mutate(
+        cls, root, info,
+        username,
+        first_name,
+        last_name,
+        country
+    ):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        username_exists = User.objects.get(username=username)
+
+        if username_exists:
+
+            raise Exception("The username provided has already been used")
+
+        try:
+
+            update_user = User.objects.get(pk=int(user.id))
+
+            print(update_user)
+            
+        except User.DoesNotExist:
+
+            update_user = None
+
+        else:
+
+            update_user.username = username
+            update_user.first_name = first_name
+            update_user.last_name = last_name
+
+            update_user.save()
+
+        try:
+
+            voter = Voter.objects.get(user=user)
+
+        except:
+
+            print("Account does not exist")
+
+            raise Exception("This account does not exist")
+
+        else:
+
+            voter.country = country
+
+            voter.save()
+
+        return UpdateVoter(voter=voter)
+
 # GraphQL Mutations
 
 class Mutation(graphene.ObjectType):
     
     register_voter = CreateVoter.Field()
+    update_voter = UpdateVoter.Field()
