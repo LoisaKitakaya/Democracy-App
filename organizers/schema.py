@@ -137,8 +137,6 @@ class CreateOrganizer(graphene.Mutation):
 
         else:
 
-            find_workspace = Workspace.objects.get(name=workspace)
-
             if find_workspace:
 
                 raise Exception("A workspace with the same name already exists")
@@ -171,7 +169,7 @@ class CreateOrganizer(graphene.Mutation):
 class UpdateOrganizer(graphene.Mutation):
 
     class Arguments:
-
+        
         username = graphene.String(required=True)
         first_name = graphene.String(required=True)
         last_name = graphene.String(required=True)
@@ -204,13 +202,23 @@ class UpdateOrganizer(graphene.Mutation):
 
             raise Exception("The username provided has already been used")
 
+        try:
+
+            update_user = User.objects.get(pk=int(user.id))
+
+            print(update_user)
+            
+        except User.DoesNotExist:
+
+            update_user = None
+
         else:
 
-            User.objects.filter(id=user.id).update(
-                username=username,
-                first_name=first_name,
-                last_name=last_name
-            )
+            update_user.username = username
+            update_user.first_name = first_name
+            update_user.last_name = last_name
+
+            update_user.save()
 
         try:
 

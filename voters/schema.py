@@ -2,6 +2,8 @@ import graphene
 from graphene_django import DjangoObjectType
 from voters.models import Voter
 from organizers.models import Workspace, Organizer
+from django.contrib.auth.models import Permission
+from graphql_jwt.decorators import permission_required
 
 # my object type
 
@@ -19,11 +21,12 @@ class Query(graphene.ObjectType):
     
     # queries
 
-    all_voters = graphene.List(VoterType)
+    my_voter_account = graphene.Field(VoterType)
+    voter_avatar = graphene.String()
 
     # resolving queries
 
-    def resolve_all_voters(root, info):
+    def resolve_voter_avatar(root, info):
 
         user = info.context.user
 
@@ -31,7 +34,34 @@ class Query(graphene.ObjectType):
             
             raise Exception("Authentication credentials were not provided")
 
-        return Voter.objects.all()
+        voter = Voter.objects.get(user=user)
+
+        try:
+
+            voter.image.url
+
+        except:
+
+            print("User has not uploaded an image")
+
+            return "https://via.placeholder.com/300"
+
+        else:
+
+            voter_avatar = voter.image.url
+
+            return voter_avatar
+
+    @permission_required("ballot.add_ballot")
+    def resolve_my_voter_account(root, info):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        return Voter.objects.get(user=user)
 
 # voter model mutations
 
@@ -57,11 +87,19 @@ class CreateVoter(graphene.Mutation):
             
             raise Exception("Authentication credentials were not provided")
 
-        is_organizer = Organizer.objects.get(user=user)
+        try:
 
-        if is_organizer:
+            is_organizer = Organizer.objects.get(user=user)
 
-            raise Exception("You cannot register as a voter. You already have an organizer account")
+        except:
+
+            print("User is not associated with voter account")
+
+        else:
+
+            if is_organizer:
+
+                raise Exception("You cannot register as a voter. You already have an organizer account")
 
         selected_workspace = Workspace.objects.get(name=workspace)
 
@@ -70,6 +108,18 @@ class CreateVoter(graphene.Mutation):
             country=country,
             workspace=selected_workspace
         )
+
+        try:
+
+            organizer_permissions = Permission.objects.get(name="Can add ballot")
+
+        except Permission.DoesNotExist:
+
+            print("Permission does not exist")
+
+        else:
+
+            user.user_permissions.add(organizer_permissions)
 
         return CreateVoter(voter=voter)
 
