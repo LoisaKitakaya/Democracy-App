@@ -35,8 +35,35 @@ class Query(graphene.ObjectType):
     organizer_avatar = graphene.String()
     my_organizer_account = graphene.Field(OrganizerType)
     all_workspaces = graphene.List(WorkspaceType)
+    voter_organizer_image = graphene.String(id=graphene.String(required=True))
 
     # resolving queries
+
+    def resolve_voter_organizer_image(root, info, id):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        organizer = Organizer.objects.get(id=int(id))
+
+        try:
+
+            organizer.image.url
+
+        except:
+
+            print("User has not uploaded an image")
+
+            return "https://via.placeholder.com/300"
+
+        else:
+
+            organizer_avatar = organizer.image.url
+
+            return organizer_avatar
 
     def resolve_organizer_avatar(root, info):
 
