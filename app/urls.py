@@ -27,6 +27,7 @@ urlpatterns = [
     # drf api path
     path('organizers/', include('organizers.urls')),
     path('candidates/', include('polls.urls')),
+    path('voters/', include('voters.urls')),
 ]
 
 admin.site.site_header = 'Pollar Admin Panel'
