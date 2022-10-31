@@ -33,8 +33,21 @@ class Query(graphene.ObjectType):
     organizer_polls = graphene.List(PollType)
     organizer_candidates = graphene.List(CandidateType)
     candidate_avatar = graphene.String(id=graphene.String())
+    voter_polls = graphene.List(PollType, id=graphene.String(required=True))
 
     # resolving queries
+
+    def resolve_voter_polls(root, info, id):
+
+        user = info.context.user
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        organizer = Organizer.objects.get(id=int(id))
+
+        return Poll.objects.filter(organizer=organizer)  
 
     def resolve_organizer_polls(root, info):
 
