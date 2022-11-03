@@ -15,17 +15,23 @@ class BallotType(DjangoObjectType):
 
         fields = '__all__'
 
+class CandidateResults(graphene.ObjectType):
+
+    name = graphene.String()
+    image = graphene.String()
+    total_votes = graphene.Int()
+
 # GraphQL Queries
 
 class Query(graphene.ObjectType):
     
     # queries
 
-    all_ballots = graphene.List(BallotType)
+    results = graphene.List(CandidateResults, poll_id=graphene.String(required=True))
 
     # resolving queries
 
-    def resolve_all_ballots(root, info):
+    def resolve_results(root, info, poll_id):
 
         user = info.context.user
 
@@ -33,7 +39,49 @@ class Query(graphene.ObjectType):
             
             raise Exception("Authentication credentials were not provided")
 
-        return Ballot.objects.all()
+        try:
+
+            poll = Poll.objects.get(id=int(poll_id))
+
+        except:
+
+            print("Poll does not exist")
+
+            raise Exception("This poll does not exist")
+
+        try:
+
+            candidates_in_poll = Candidate.objects.filter(poll=poll)
+
+        except:
+
+            print("This poll has no registered candidates")
+
+        poll_results = []
+
+        candidate_count = []
+
+        for candidate in candidates_in_poll:
+
+            result = {
+                'candidate': f'{candidate.first_name} {candidate.last_name}',
+                'image': f'{candidate.image.url}',
+                'total': len(Ballot.objects.filter(candidate=candidate)),
+            }
+
+            candidate_count.append(result)
+
+        for x in range(len(candidate_count)):
+
+            candidate_results = CandidateResults(
+                name=candidate_count[x]["candidate"],
+                image=candidate_count[x]["image"],
+                total_votes=int(candidate_count[x]["total"])
+            )
+
+            poll_results.append(candidate_results)
+
+        return poll_results
 
 # GraphQL Mutations
 
