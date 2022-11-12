@@ -30,6 +30,7 @@ class Query(graphene.ObjectType):
     
     # queries
 
+    Voter_polls = graphene.List(PollType)
     organizer_polls = graphene.List(PollType)
     organizer_candidates = graphene.List(CandidateType)
     candidate_avatar = graphene.String(id=graphene.String())
