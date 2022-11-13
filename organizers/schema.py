@@ -212,7 +212,6 @@ class UpdateOrganizer(graphene.Mutation):
         last_name = graphene.String(required=True)
         phone = graphene.String(required=True)
         country = graphene.String(required=True)
-        workspace = graphene.String(required=True)
 
     organizer = graphene.Field(OrganizerType)
 
@@ -223,31 +222,39 @@ class UpdateOrganizer(graphene.Mutation):
         first_name,
         last_name,
         phone,
-        country,
-        workspace
+        country
     ):
 
         user = info.context.user
+
+        print(user.id)
+        print(type(user.id))
 
         if not user.is_authenticated:
             
             raise Exception("Authentication credentials were not provided")
 
-        username_exists = User.objects.get(username=username)
+        try:
 
-        if username_exists:
+            User.objects.get(username=username)
+
+        except:
+
+            print("This username is available")
+
+        else:
 
             raise Exception("The username provided has already been used")
 
         try:
 
-            update_user = User.objects.get(pk=int(user.id))
+            update_user = User.objects.get(id=user.id)
 
             print(update_user)
             
-        except User.DoesNotExist:
+        except:
 
-            update_user = None
+            print("This user account does not exist")
 
         else:
 
@@ -273,22 +280,6 @@ class UpdateOrganizer(graphene.Mutation):
             organizer.country = country
 
             organizer.save()
-
-        try:
-
-            organizer_workspace = Workspace.objects.get(organizer=organizer)
-
-        except:
-
-            print("Workspace does not exist")
-
-            raise Exception("Workspace does not exist")
-
-        else:
-
-            organizer_workspace.name = workspace
-
-            organizer_workspace.save()
 
         return UpdateOrganizer(organizer=organizer)
 
