@@ -100,7 +100,17 @@ class Query(graphene.ObjectType):
             
             raise Exception("Authentication credentials were not provided")
 
-        return Organizer.objects.get(user=user)
+        try:
+
+            organizer = Organizer.objects.get(user=user)
+
+        except:
+
+            print("Such an account does not exist")
+
+        else:
+
+            return organizer
 
     def resolve_all_workspaces(root, info):
 

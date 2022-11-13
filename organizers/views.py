@@ -5,27 +5,57 @@ from .models import Organizer
 
 # Create your views here.
 
-@api_view(['POST'])
-def update_avatar(request):
+@api_view(['GET', 'POST'])
+def avatar(request):
 
-    id = request.data.get("id")
-    image = request.FILES.get('image')
+    if request.method == 'GET':
 
-    try:
+        id = request.GET['id']
 
-        organizer = Organizer.objects.get(id=int(id))
+        try:
 
-    except:
+            organizer = Organizer.objects.get(id=int(id))
 
-        print("organizer account does not exist")
+        except:
 
-        return Response(data={"error": "account by that id does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            print("organizer account does not exist")
 
-    else:
+            return Response(data={"error": "account by that id does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
-        organizer.image = image
+        try:
 
-        organizer.save()
+            organizer.image.url
 
-        return Response(data={"success": "avatar updated"}, status=status.HTTP_200_OK)
+        except:
+
+            print("organizer does not have an existing avatar")
+
+            return Response(data={"image": "https://via.placeholder.com/720x468"}, status=status.HTTP_200_OK)
+
+        else:
+
+            return Response(data={"image": organizer.image.url}, status=status.HTTP_200_OK)
+
+    if request.method == 'POST':
+
+        id = request.data.get("id")
+        image = request.FILES.get('image')
+
+        try:
+
+            organizer = Organizer.objects.get(id=int(id))
+
+        except:
+
+            print("organizer account does not exist")
+
+            return Response(data={"error": "account by that id does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        else:
+
+            organizer.image = image
+
+            organizer.save()
+
+            return Response(data={"success": "avatar updated"}, status=status.HTTP_200_OK)
 
