@@ -40,7 +40,7 @@ class Workspace(models.Model):
     name = models.CharField(max_length=254, blank=False, unique=True)
     organizer = models.ForeignKey(Organizer, on_delete=models.CASCADE)
     voter_limit = models.IntegerField(default=10, blank=False)
-    poll_limit = models.IntegerField(default=1, blank=False)
+    poll_limit = models.IntegerField(default=2, blank=False)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

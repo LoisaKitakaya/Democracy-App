@@ -63,9 +63,19 @@ class Query(graphene.ObjectType):
 
         for candidate in candidates_in_poll:
 
+            try:
+
+                image = candidate.image.url
+
+            except:
+
+                print("Candidate does not have an existing avatar")
+
+                image = "https://via.placeholder.com/300"
+
             result = {
                 'candidate': f'{candidate.first_name} {candidate.last_name}',
-                'image': f'{candidate.image.url}',
+                'image': f'{image}',
                 'total': len(Ballot.objects.filter(candidate=candidate)),
             }
 
@@ -150,7 +160,7 @@ class CastBallot(graphene.Mutation):
 
             if has_voted:
 
-                raise Exception("You have already voted on this poll. You cannot vote twice!")
+                raise Exception("You have already voted on this poll. You cannot vote more than once!")
 
         ballot = Ballot.objects.create(
             poll=cast_poll,
