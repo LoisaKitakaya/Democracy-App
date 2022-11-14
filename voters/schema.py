@@ -150,21 +150,27 @@ class UpdateVoter(graphene.Mutation):
             
             raise Exception("Authentication credentials were not provided")
 
-        username_exists = User.objects.get(username=username)
+        try:
 
-        if username_exists:
+            User.objects.get(username=username)
+
+        except:
+
+            print("This username is available")
+
+        else:
 
             raise Exception("The username provided has already been used")
 
         try:
 
-            update_user = User.objects.get(pk=int(user.id))
+            update_user = User.objects.get(id=int(user.id))
 
             print(update_user)
             
-        except User.DoesNotExist:
+        except:
 
-            update_user = None
+            print("This user account does not exist")
 
         else:
 
