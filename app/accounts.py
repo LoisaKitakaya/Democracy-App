@@ -13,19 +13,19 @@ class AccountObject():
 
         self.pro = {
             "tier_name": "Pro",
-            "poll_limit": 6,
+            "poll_limit": 4,
             "voter_limit": 100
         }
 
         self.business = {
             "tier_name": "Business",
-            "poll_limit": 12,
+            "poll_limit": 8,
             "voter_limit": 1000
         }
 
         self.enterprise = {
             "tier_name": "Enterprise",
-            "poll_limit": 24,
+            "poll_limit": 16,
             "voter_limit": 10000
         }
 
@@ -149,3 +149,51 @@ class AccountObject():
             complete = False
 
         return complete
+
+class PollAction(AccountObject):
+
+    def __init__(self, workspace, organizer) -> None:
+        super().__init__(workspace, organizer)
+
+    def __str__(self) -> str:
+        
+        return super().__str__()
+
+    def create_poll(
+        self,
+        seat,
+        intro,
+        begin_date,
+        end_date
+    ):
+
+        organizer = self.organizer
+        workspace = self.workspace
+
+        current_count = self.current_poll_count()
+        tier = self.check_tier()
+
+        poll_limit = tier["poll_limit"]
+
+        print(poll_limit)
+
+        try:
+
+            assert (current_count <= poll_limit)
+
+        except AssertionError:
+
+            raise AssertionError
+
+        else:
+
+            new_poll = Poll.objects.create(
+                seat=seat,
+                intro=intro,
+                begin_date=begin_date,
+                end_date=end_date,
+                organizer=organizer,
+                workspace=workspace
+            )
+
+        return new_poll

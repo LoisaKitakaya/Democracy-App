@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from organizers.models import Workspace, Organizer
 from polls.models import Poll, Candidate
+from app.accounts import PollAction
 from graphql_jwt.decorators import permission_required
 
 # my object type
@@ -133,13 +134,13 @@ class CreatePoll(graphene.Mutation):
 
         workspace = Workspace.objects.get(organizer=organizer)
 
-        poll = Poll.objects.create(
+        poll_object = PollAction(organizer=organizer, workspace=workspace)
+
+        poll = poll_object.create_poll(
             seat=seat,
             intro=intro,
             begin_date=begin_date,
-            end_date=end_date,
-            organizer=organizer,
-            workspace=workspace
+            end_date=end_date
         )
 
         return CreatePoll(poll=poll)
