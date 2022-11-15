@@ -4,6 +4,7 @@ from voters.models import Voter
 from organizers.models import Workspace, Organizer
 from users.models import User
 from django.contrib.auth.models import Permission
+from app.accounts import VoterAction
 from graphql_jwt.decorators import permission_required
 
 # my object type
@@ -104,11 +105,12 @@ class CreateVoter(graphene.Mutation):
 
         selected_workspace = Workspace.objects.get(name=workspace)
 
-        voter = Voter.objects.create(
+        voter_object = VoterAction(
             user=user,
-            country=country,
             workspace=selected_workspace
         )
+
+        voter = voter_object.register_voter_to_workspace(country=country)
 
         try:
 

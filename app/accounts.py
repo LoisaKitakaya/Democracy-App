@@ -130,14 +130,6 @@ class AccountObject():
 
         return current_count
 
-    def current_voter_count(self):
-
-        workspace = self.workspace
-
-        current_count = Voter.objects.filter(workspace=workspace).count()
-
-        return current_count
-
     def election_completeness(self, tier):
 
         organizer = self.organizer
@@ -199,3 +191,55 @@ class PollAction(AccountObject):
             )
 
         return new_poll
+
+class VoterObject():
+
+    def __init__(self, workspace, user) -> None:
+
+        self.workspace = workspace
+        self.user = user
+
+    def __str__(self) -> str:
+        
+        return f'{self.user.username}: {self.workspace.name}'
+
+    def current_voter_count(self):
+
+        workspace = self.workspace
+
+        current_count = Voter.objects.filter(workspace=workspace).count()
+
+        return current_count
+
+class VoterAction(VoterObject):
+
+    def __init__(self, workspace, user) -> None:
+        super().__init__(workspace, user)
+
+    def __str__(self) -> str:
+
+        return super().__str__()
+
+    def register_voter_to_workspace(self, country):
+
+        voter_count = self.current_voter_count()
+
+        voter_limit = (self.workspace.voter_limit - 1)
+
+        try:
+
+            assert (voter_count <= voter_limit), "current_count is greater than voter_limit"
+
+        except AssertionError:
+
+            raise Exception(f'The max number of voters i.e. {self.workspace.voter_limit} that can be registered to this workspace has already been reached. Contact your organizer for more information.')
+
+        else:
+
+            new_voter = Voter.objects.create(
+                user=self.user,
+                country=country,
+                workspace=self.workspace
+            )
+
+        return new_voter
