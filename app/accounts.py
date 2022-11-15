@@ -173,13 +173,19 @@ class PollAction(AccountObject):
         current_count = self.current_poll_count()
         tier = self.check_tier()
 
-        print(current_count, tier["poll_limit"], type(tier["poll_limit"]))
+        poll_limit = tier["poll_limit"]
 
-        if current_count >= tier["poll_limit"]:
+        print(poll_limit)
 
-            return None
+        try:
 
-        elif current_count < tier["poll_limit"]:
+            assert (current_count <= poll_limit)
+
+        except AssertionError:
+
+            raise AssertionError
+
+        else:
 
             new_poll = Poll.objects.create(
                 seat=seat,
