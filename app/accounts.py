@@ -5,38 +5,30 @@ class AccountObject():
 
     def __init__(self, workspace, organizer) -> None:
 
-        self.free = {
-            "tier_name": "Free",
-            "poll_limit": 2,
-            "voter_limit": 10
-        }
+        self.workspace = workspace
 
-        self.pro = {
-            "tier_name": "Pro",
-            "poll_limit": 4,
-            "voter_limit": 100
-        }
-
-        self.business = {
-            "tier_name": "Business",
-            "poll_limit": 8,
-            "voter_limit": 1000
-        }
-
-        self.enterprise = {
-            "tier_name": "Enterprise",
-            "poll_limit": 16,
-            "voter_limit": 10000
-        }
+        self.organizer = organizer
 
         self.FREE = 'FREE_TIER'
         self.PRO = 'PRO_TIER'
         self.BUSINESS = 'BUSINESS_TIER'
         self.ENTERPRISE = 'ENTERPRISE_TIER'
 
-        self.workspace = workspace
+        self.FREE_TIER = (
+            {"name": self.FREE, "poll_limit": 2, "voter_limit": 10},
+        )
 
-        self.organizer = organizer
+        self.PRO_TIER = (
+            {"tier_name": self.PRO, "poll_limit": 4, "voter_limit": 100},
+        )
+
+        self.BUSINESS_TIER = (
+            {"tier_name": self.BUSINESS, "poll_limit": 8, "voter_limit": 1000},
+        )
+
+        self.ENTERPRISE_TIER = (
+            {"tier_name": self.ENTERPRISE, "poll_limit": 16, "voter_limit": 10000},
+        )
 
     def __str__(self) -> str:
         
@@ -49,21 +41,33 @@ class AccountObject():
         poll_limit = self.workspace.poll_limit
         voter_limit = self.workspace.voter_limit
 
-        if tier == "FREE_TIER" and poll_limit == 2 and voter_limit == 10:
+        if tier == self.FREE_TIER[0].get("tier_name") and poll_limit == self.FREE_TIER[0].get("poll_limit") and voter_limit == self.FREE_TIER[0].get("voter_limit"):
 
-            return self.free
+            account_tier = self.FREE_TIER
 
-        elif tier == "PRO_TIER" and poll_limit == 6 and voter_limit == 100:
+            return account_tier
 
-            return self.pro
+        elif tier == self.PRO_TIER[0].get("tier_name") and poll_limit == self.PRO_TIER[0].get("poll_limit") and voter_limit == self.PRO_TIER[0].get("voter_limit"):
 
-        elif tier == "BUSINESS_TIER" and poll_limit == 12 and voter_limit == 1000:
+            account_tier = self.PRO_TIER
 
-            return self.business
+            return account_tier
 
-        elif tier == "ENTERPRISE_TIER" and poll_limit == 24 and voter_limit == 10000:
+        elif tier == self.BUSINESS_TIER[0].get("tier_name") and poll_limit == self.BUSINESS_TIER[0].get("poll_limit") and voter_limit == self.BUSINESS_TIER[0].get("voter_limit"):
 
-            return self.enterprise
+            account_tier = self.BUSINESS_TIER
+
+            return account_tier
+
+        elif tier == self.ENTERPRISE_TIER[0].get("tier_name") and poll_limit == self.ENTERPRISE_TIER[0].get("poll_limit") and voter_limit == self.ENTERPRISE_TIER[0].get("voter_limit"):
+
+            account_tier = self.ENTERPRISE_TIER
+
+            return account_tier
+
+        else:
+
+            return f'Something is not right'
 
     def upgrade_account(self, tier):
 
@@ -173,17 +177,15 @@ class PollAction(AccountObject):
         current_count = self.current_poll_count()
         tier = self.check_tier()
 
-        poll_limit = tier["poll_limit"]
-
-        print(poll_limit)
+        poll_limit = (tier[0].get("poll_limit") + 1)
 
         try:
 
-            assert (current_count <= poll_limit)
+            assert (current_count <= poll_limit), "current_count is greater than poll_limit"
 
         except AssertionError:
 
-            raise AssertionError
+            raise Exception("You have reached the max number of polls you can create given your currently running package. Upgrade to create more polls")
 
         else:
 
