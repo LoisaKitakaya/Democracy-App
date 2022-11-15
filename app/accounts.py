@@ -41,25 +41,25 @@ class AccountObject():
         poll_limit = self.workspace.poll_limit
         voter_limit = self.workspace.voter_limit
 
-        if tier == self.FREE_TIER[0].get("tier_name") and poll_limit == self.FREE_TIER[0].get("poll_limit") and voter_limit == self.FREE_TIER[0].get("voter_limit"):
+        if tier == "FREE_TIER" and poll_limit == 2 and voter_limit == 10:
 
             account_tier = self.FREE_TIER
 
             return account_tier
 
-        elif tier == self.PRO_TIER[0].get("tier_name") and poll_limit == self.PRO_TIER[0].get("poll_limit") and voter_limit == self.PRO_TIER[0].get("voter_limit"):
+        elif tier == "PRO_TIER" and poll_limit == 4 and voter_limit == 100:
 
             account_tier = self.PRO_TIER
 
             return account_tier
 
-        elif tier == self.BUSINESS_TIER[0].get("tier_name") and poll_limit == self.BUSINESS_TIER[0].get("poll_limit") and voter_limit == self.BUSINESS_TIER[0].get("voter_limit"):
+        elif tier == "BUSINESS_TIER" and poll_limit == 8 and voter_limit == 1000:
 
             account_tier = self.BUSINESS_TIER
 
             return account_tier
 
-        elif tier == self.ENTERPRISE_TIER[0].get("tier_name") and poll_limit == self.ENTERPRISE_TIER[0].get("poll_limit") and voter_limit == self.ENTERPRISE_TIER[0].get("voter_limit"):
+        elif tier == "ENTERPRISE_TIER" and poll_limit == 16 and voter_limit == 10000:
 
             account_tier = self.ENTERPRISE_TIER
 
@@ -151,6 +151,9 @@ class PollAction(AccountObject):
     def __init__(self, workspace, organizer) -> None:
         super().__init__(workspace, organizer)
 
+        self.current_count = self.current_poll_count()
+        self.tier = self.check_tier()
+
     def __str__(self) -> str:
         
         return super().__str__()
@@ -166,14 +169,13 @@ class PollAction(AccountObject):
         organizer = self.organizer
         workspace = self.workspace
 
-        current_count = self.current_poll_count()
-        tier = self.check_tier()
+        poll_limit = (self.tier[0]["poll_limit"] - 1)
 
-        poll_limit = (tier[0].get("poll_limit") + 1)
+        print(poll_limit)
 
         try:
 
-            assert (current_count <= poll_limit), "current_count is greater than poll_limit"
+            assert (self.current_count <= poll_limit), "current_count is greater than poll_limit"
 
         except AssertionError:
 
@@ -216,19 +218,19 @@ class VoterAction(VoterObject):
     def __init__(self, workspace, user) -> None:
         super().__init__(workspace, user)
 
+        self.voter_count = self.current_voter_count()
+
     def __str__(self) -> str:
 
         return super().__str__()
 
     def register_voter_to_workspace(self, country):
 
-        voter_count = self.current_voter_count()
-
         voter_limit = (self.workspace.voter_limit - 1)
 
         try:
 
-            assert (voter_count <= voter_limit), "current_count is greater than voter_limit"
+            assert (self.voter_count <= voter_limit), "current_count is greater than voter_limit"
 
         except AssertionError:
 
