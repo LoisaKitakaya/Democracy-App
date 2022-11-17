@@ -171,8 +171,6 @@ class PollAction(AccountObject):
 
         poll_limit = (self.tier[0]["poll_limit"] - 1)
 
-        print(poll_limit)
-
         try:
 
             assert (self.current_count <= poll_limit), "current_count is greater than poll_limit"
