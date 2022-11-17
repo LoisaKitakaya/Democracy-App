@@ -24,35 +24,8 @@ class Query(graphene.ObjectType):
     # queries
 
     my_voter_account = graphene.Field(VoterType)
-    voter_avatar = graphene.String()
 
     # resolving queries
-
-    def resolve_voter_avatar(root, info):
-
-        user = info.context.user
-
-        if not user.is_authenticated:
-            
-            raise Exception("Authentication credentials were not provided")
-
-        voter = Voter.objects.get(user=user)
-
-        try:
-
-            voter.image.url
-
-        except:
-
-            print("User has not uploaded an image")
-
-            return "https://via.placeholder.com/300"
-
-        else:
-
-            voter_avatar = voter.image.url
-
-            return voter_avatar
 
     @permission_required("ballot.add_ballot")
     def resolve_my_voter_account(root, info):
