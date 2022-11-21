@@ -36,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -206,8 +206,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://democracy-app.up.railway.app',
     'http://localhost:3000',
-    'https://democracy-app.up.railway.app/',
 ]
 
 CORS_ALLOW_METHODS = list(default_methods)
