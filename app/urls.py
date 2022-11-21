@@ -28,6 +28,9 @@ urlpatterns = [
     path('organizers/', include('organizers.urls')),
     path('candidates/', include('polls.urls')),
     path('voters/', include('voters.urls')),
+
+    # generate report
+    path('report/', include('ballot.urls')),
 ]
 
 admin.site.site_header = 'Pollar Admin Panel'
