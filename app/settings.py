@@ -36,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -202,11 +202,13 @@ GRAPHQL_JWT = {
 # CORS headers settings
 
 CORS_ALLOWED_ORIGINS = [
+    'https://pollar-e-votig.netlify.app',
     'http://localhost:3000',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://democracy-app.up.railway.app',
+    'https://pollar-e-votig.netlify.app'
     'http://localhost:3000',
 ]
 
