@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 import environ
+import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 
@@ -105,13 +106,21 @@ AUTH_USER_MODEL = 'users.User'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+# PostgreSQL
+
+# DATABASE_URL = env("DATABASE_URL")
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+DATABASES = {
+    "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1800),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -194,7 +203,6 @@ GRAPHQL_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://democracy-app.up.railway.app/',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
