@@ -15,19 +15,19 @@ class AccountObject():
         self.ENTERPRISE = 'ENTERPRISE_TIER'
 
         self.FREE_TIER = (
-            {"name": self.FREE, "poll_limit": 2, "voter_limit": 10},
+            {"name": self.FREE, "poll_limit": 2, "voter_limit": 10, "price": "Free"},
         )
 
         self.PRO_TIER = (
-            {"tier_name": self.PRO, "poll_limit": 4, "voter_limit": 100},
+            {"tier_name": self.PRO, "poll_limit": 4, "voter_limit": 100, "price": "KES 15000"},
         )
 
         self.BUSINESS_TIER = (
-            {"tier_name": self.BUSINESS, "poll_limit": 8, "voter_limit": 1000},
+            {"tier_name": self.BUSINESS, "poll_limit": 8, "voter_limit": 1000, "price": "KES 35000"},
         )
 
         self.ENTERPRISE_TIER = (
-            {"tier_name": self.ENTERPRISE, "poll_limit": 16, "voter_limit": 10000},
+            {"tier_name": self.ENTERPRISE, "poll_limit": 16, "voter_limit": 10000, "price": "KES 65000"},
         )
 
     def __str__(self) -> str:
@@ -80,8 +80,8 @@ class AccountObject():
             organizer.paid_status = True
             organizer.save()
 
-            workspace.poll_limit = self.pro["poll_limit"]
-            workspace.voter_limit = self.pro["voter_limit"]
+            workspace.poll_limit = self.PRO_TIER[0]["poll_limit"]
+            workspace.voter_limit = self.PRO_TIER[0]["voter_limit"]
             workspace.save()
 
             message = "You have upgraded to Pollar PRO package."
@@ -97,8 +97,8 @@ class AccountObject():
             organizer.paid_status = True
             organizer.save()
 
-            workspace.poll_limit = self.business["poll_limit"]
-            workspace.voter_limit = self.business["voter_limit"]
+            workspace.poll_limit = self.BUSINESS_TIER[0]["poll_limit"]
+            workspace.voter_limit = self.BUSINESS_TIER[0]["voter_limit"]
             workspace.save()
 
             message = "You have upgraded to Pollar BUSINESS package."
@@ -114,8 +114,8 @@ class AccountObject():
             organizer.paid_status = True
             organizer.save()
 
-            workspace.poll_limit = self.enterprise["poll_limit"]
-            workspace.voter_limit = self.enterprise["voter_limit"]
+            workspace.poll_limit = self.ENTERPRISE_TIER[0]["poll_limit"]
+            workspace.voter_limit = self.ENTERPRISE_TIER[0]["voter_limit"]
             workspace.save()
 
             message = "You have upgraded to Pollar ENTERPRISE package."
