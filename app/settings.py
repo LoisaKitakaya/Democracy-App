@@ -194,10 +194,12 @@ GRAPHQL_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'https://democracy-app.up.railway.app/',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
+    'https://democracy-app.up.railway.app/',
 ]
 
 CORS_ALLOW_METHODS = list(default_methods)
