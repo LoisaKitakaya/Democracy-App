@@ -46,24 +46,30 @@ class UserRegistration(graphene.Mutation):
 
         if not User.objects.filter(email=email).exists():
 
-            if password == password2:
+            if len(password) > 8 and len(password2) > 8:
 
-                user = User.objects.create(
-                    username=username, 
-                    email=email, 
-                    first_name=firstname, 
-                    last_name=lastname
-                    )
+                if password == password2:
+
+                    user = User.objects.create(
+                        username=username, 
+                        email=email, 
+                        first_name=firstname, 
+                        last_name=lastname
+                        )
+
+                else:
+
+                    raise Exception("Passwords provided did not match!")
+
+                new_user = User.objects.get(email=email)
+
+                new_user.set_password(password)
+
+                new_user.save()
 
             else:
 
-                raise Exception("Passwords provided did not match!")
-
-            new_user = User.objects.get(email=email)
-
-            new_user.set_password(password)
-
-            new_user.save()
+                raise Exception("Your password is too short. Must have minimum of 8 characters")
 
         else:
 
