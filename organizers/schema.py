@@ -4,6 +4,7 @@ from organizers.models import Organizer, Workspace
 from voters.models import Voter
 from users.models import User
 from django.contrib.auth.models import Permission
+from app.accounts import AccountObject
 from graphql_jwt.decorators import permission_required
 
 # my object type
@@ -229,9 +230,48 @@ class UpdateOrganizer(graphene.Mutation):
 
         return UpdateOrganizer(organizer=organizer)
 
+class UpgradeAccount(graphene.Mutation):
+
+    class Arguments:
+
+        tier = graphene.String(required=True)
+
+    organizer = graphene.Field(OrganizerType)
+
+    @classmethod
+    @permission_required("polls.add_poll")
+    def mutate(
+        cls, root, info,
+        tier
+    ):
+
+        user = info.context.user
+
+        print(user.id)
+        print(type(user.id))
+
+        if not user.is_authenticated:
+            
+            raise Exception("Authentication credentials were not provided")
+
+        organizer = Organizer.objects.get(user=user)
+
+        workspace = Workspace.objects.get(organizer=organizer)
+
+        account_object = AccountObject(organizer=organizer, workspace=workspace)
+
+        upgrade_account = account_object.upgrade_account(tier=tier)
+
+        print(upgrade_account)
+
+        account = Organizer.objects.get(user=user)
+
+        return UpgradeAccount(organizer=account)
+
 # GraphQL Mutations
 
 class Mutation(graphene.ObjectType):
     
     register_organizer = CreateOrganizer.Field()
     update_organizer = UpdateOrganizer.Field()
+    upgrade_account = UpgradeAccount.Field()
